@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hospitalidad en Acción</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f7fafc;
+        }
+
+        .navbar {
+            background: #fff;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a5568;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .user-role {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            text-decoration: none;
+            color: #4a5568;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: skew(-20deg);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th {
+            background: #f7fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pendiente {
+            background: #fef5e7;
+            color: #d69e2e;
+        }
+
+        .status-aprobada {
+            background: #f0fff4;
+            color: #38a169;
+        }
+
+        .status-rechazada {
+            background: #fed7d7;
+            color: #e53e3e;
+        }
+
+        .status-asignada {
+            background: #ebf8ff;
+            color: #3182ce;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #718096;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            color: #38a169;
+            border-color: #48bb78;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #e53e3e;
+            border-color: #f56565;
+        }
+
+        .alert-info {
+            background: #ebf8ff;
+            color: #3182ce;
+            border-color: #4299e1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .user-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+            }
+
+            .sidebar-menu a {
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-home"></i> Hospitalidad en Acción
+            </a>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">Cargando...</div>
+                    <div class="user-role" id="userRole">Cargando...</div>
+                </div>
+                <button class="logout-btn" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h3 class="sidebar-title">
+                <i class="fas fa-tachometer-alt"></i> Panel de Control
+            </h3>
+            <ul class="sidebar-menu" id="sidebarMenu">
+                <li><a href="#overview" class="menu-item active" data-section="overview">
+                    <i class="fas fa-chart-bar"></i> Resumen
+                </a></li>
+                <li><a href="#mis-solicitudes" class="menu-item" data-section="mis-solicitudes">
+                    <i class="fas fa-bed"></i> Mis Solicitudes
+                </a></li>
+                <li><a href="#mis-ofertas" class="menu-item" data-section="mis-ofertas">
+                    <i class="fas fa-home"></i> Mis Ofertas
+                </a></li>
+                <li><a href="#eventos" class="menu-item" data-section="eventos">
+                    <i class="fas fa-calendar-alt"></i> Eventos
+                </a></li>
+                <!-- Opciones para roles administrativos -->
+                <li class="admin-only" style="display: none;">
+                    <a href="#gestionar-solicitudes" class="menu-item" data-section="gestionar-solicitudes">
+                        <i class="fas fa-tasks"></i> Gestionar Solicitudes
+                    </a>
+                </li>
+                <li class="admin-only" style="display: none;">
+                    <a href="#crear-evento" class="menu-item" data-section="crear-evento">
+                        <i class="fas fa-plus-circle"></i> Crear Evento
+                    </a>
+                </li>
+                <li class="super-admin-only" style="display: none;">
+                    <a href="#usuarios" class="menu-item" data-section="usuarios">
+                        <i class="fas fa-users"></i> Gestionar Usuarios
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- Sección: Resumen -->
+            <section id="overview" class="section active">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        <i class="fas fa-chart-bar"></i> Resumen General
+                    </h2>
+                </div>
+                
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <div class="stat-number" id="totalSolicitudes">0</div>
+                        <div class="stat-label">Mis Solicitudes</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="stat-number" id="totalOfertas">0</div>
+                        <div class="stat-label">Mis Ofertas</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-number" id="eventosDisponibles">0</div>
+                        <div class="stat-label">Eventos Disponibles</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="stat-number" id="asignacionesActivas">0</div>
+                        <div class="stat-label">Asignaciones Activas</div>
+                    </div>
+                </div>
+
+                <div id="alertContainer"></div>
+            </section>
+
+            <!-- Sección: Mis Solicitudes -->
+            <section id="mis-solicitudes" class="section">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        <i class="fas fa-bed"></i> Mis Solicitudes de Hospedaje
+                    </h2>
+                    <a href="eventos.html" class="btn">
+                        <i class="fas fa-plus"></i> Nueva Solicitud
+                    </a>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Evento</th>
+                                <th>Fechas</th>
+                                <th>Personas</th>
+                                <th>Estado</th>
+                                <th>Fecha Solicitud</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solicitudesTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    <p>Cargando solicitudes...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sección: Mis Ofertas -->
+            <section id="mis-ofertas" class="section">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        <i class="fas fa-home"></i> Mis Ofertas de Hospedaje
+                    </h2>
+                    <a href="ofrecer-hospedaje.html" class="btn">
+                        <i class="fas fa-plus"></i> Nueva Oferta
+                    </a>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Evento</th>
+                                <th>Habitaciones</th>
+                                <th>Capacidad</th>
+                                <th>Estado</th>
+                                <th>Fecha Oferta</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ofertasTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    <p>Cargando ofertas...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sección: Eventos -->
+            <section id="eventos" class="section">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        <i class="fas fa-calendar-alt"></i> Eventos Disponibles
+                    </h2>
+                    <a href="eventos.html" class="btn">
+                        <i class="fas fa-eye"></i> Ver Todos
+                    </a>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Ciudad</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventosTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    <p>Cargando eventos...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sección: Gestionar Solicitudes (Solo Admins) -->
+            <section id="gestionar-solicitudes" class="section">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        <i class="fas fa-tasks"></i> Gestionar Solicitudes
+                    </h2>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Evento</th>
+                                <th>Fechas</th>
+                                <th>Personas</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gestionSolicitudesTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    <p>Cargando solicitudes...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sección: Crear Evento (Solo Admins) -->
+            <section id="crear-evento" class="section">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        <i class="fas fa-plus-circle"></i> Crear Nuevo Evento
+                    </h2>
+                </div>
+                
+                <form id="crearEventoForm">
+                    <div class="form-group">
+                        <label for="eventoTitulo">Título del Evento</label>
+                        <input type="text" id="eventoTitulo" name="titulo" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventoDescripcion">Descripción</label>
+                        <textarea id="eventoDescripcion" name="descripcion" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventoCiudad">Ciudad</label>
+                        <input type="text" id="eventoCiudad" name="ciudad" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventoFechaInicio">Fecha de Inicio</label>
+                        <input type="datetime-local" id="eventoFechaInicio" name="fechaInicio" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventoFechaFin">Fecha de Fin</label>
+                        <input type="datetime-local" id="eventoFechaFin" name="fechaFin" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventoDireccion">Dirección</label>
+                        <input type="text" id="eventoDireccion" name="direccion">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventoFechaLimite">Fecha Límite de Registro</label>
+                        <input type="datetime-local" id="eventoFechaLimite" name="fechaLimiteRegistro" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i> Crear Evento
+                    </button>
+                </form>
+            </section>
+
+            <!-- Sección: Gestionar Usuarios (Solo Super Admin) -->
+            <section id="usuarios" class="section">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        <i class="fas fa-users"></i> Gestionar Usuarios
+                    </h2>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Ciudad</th>
+                                <th>Iglesia</th>
+                                <th>Estado</th>
+                                <th>Último Acceso</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuariosTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    <p>Cargando usuarios...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para detalles/edición -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Detalle</h3>
+                <button class="close-modal" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw_hmZE6PrJ7i5Q-gGG6R3I1QPDpWangAf41Z8y-gDpetqreLSy0LrE2ds81mVuwRX_/exec';
+        let usuario = null;
+        let currentSection = 'overview';
+
+        // Inicializar dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAutenticacion();
+            setupEventListeners();
+        });
+
+        function verificarAutenticacion() {
+            usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+            
+            if (!usuario) {
+                window.location.href = 'login.html?redirect=dashboard.html';
+                return;
+            }
+            
+            mostrarInformacionUsuario();
+            configurarMenuSegunRol();
+            cargarDashboard();
+        }
+
+        function mostrarInformacionUsuario() {
+            document.getElementById('userName').textContent = usuario.nombre;
+            document.getElementById('userAvatar').textContent = usuario.nombre.charAt(0).toUpperCase();
+            
+            // Mostrar rol principal
+            if (usuario.rol && usuario.rol.length > 0) {
+                const rolPrincipal = usuario.rol.find(r => r.tipoRol === 'SUPER_ADMIN') || 
+                                   usuario.rol.find(r => r.tipoRol === 'COORDINADOR_EVENTO') ||
+                                   usuario.rol.find(r => r.tipoRol === 'ASISTENTE_LOGISTICA') ||
+                                   usuario.rol[0];
+                
+                document.getElementById('userRole').textContent = formatearRol(rolPrincipal.tipoRol);
+            } else {
+                document.getElementById('userRole').textContent = 'Usuario Registrado';
+            }
+        }
+
+        function configurarMenuSegunRol() {
+            const esAdmin = tieneRolAdmin();
+            const esSuperAdmin = tieneRol('SUPER_ADMIN');
+            
+            if (esAdmin) {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            }
+            
+            if (esSuperAdmin) {
+                document.querySelectorAll('.super-admin-only').forEach(el => el.style.display = 'block');
+            }
+        }
+
+        function tieneRol(rol) {
+            if (!usuario.rol) return false;
+            return usuario.rol.some(r => r.tipoRol === rol);
+        }
+
+        function tieneRolAdmin() {
+            return tieneRol('SUPER_ADMIN') || tieneRol('COORDINADOR_EVENTO') || tieneRol('ASISTENTE_LOGISTICA');
+        }
+
+        function formatearRol(rol) {
+            const roles = {
+                'SUPER_ADMIN': 'Super Administrador',
+                'COORDINADOR_EVENTO': 'Coordinador de Evento',
+                'ASISTENTE_LOGISTICA': 'Asistente de Logística',
+                'USUARIO_REGISTRADO': 'Usuario Registrado',
+                'USUARIO_PUBLICO': 'Usuario Público'
+            };
+            
+            return roles[rol] || rol;
+        }
+
+        function setupEventListeners() {
+            // Menú lateral
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Actualizar estado activo del menú
+                    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Mostrar sección correspondiente
+                    const section = this.dataset.section;
+                    mostrarSeccion(section);
+                });
+            });
+
+            // Formulario crear evento
+            const crearEventoForm = document.getElementById('crearEventoForm');
+            if (crearEventoForm) {
+                crearEventoForm.addEventListener('submit', manejarCrearEvento);
+            }
+
+            // Cerrar modal al hacer clic fuera
+            document.getElementById('modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    cerrarModal();
+                }
+            });
+        }
+
+        function mostrarSeccion(seccionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            const seccion = document.getElementById(seccionId);
+            if (seccion) {
+                seccion.classList.add('active');
+                currentSection = seccionId;
+                
+                // Cargar datos específicos de la sección
+                cargarDatosSeccion(seccionId);
+            }
+        }
+
+        async function cargarDashboard() {
+            await cargarEstadisticas();
+            await cargarDatosSeccion(currentSection);
+        }
+
+        async function cargarEstadisticas() {
+            try {
+                showAlert('Cargando estadísticas...', 'info');
+                
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=obtenerEstadisticas&idUsuario=${usuario.id}`
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('totalSolicitudes').textContent = data.estadisticas.solicitudes || 0;
+                    document.getElementById('totalOfertas').textContent = data.estadisticas.ofertas || 0;
+                    document.getElementById('eventosDisponibles').textContent = data.estadisticas.eventos || 0;
+                    document.getElementById('asignacionesActivas').textContent = data.estadisticas.asignaciones || 0;
+                    
+                    clearAlerts();
+                } else {
+                    showAlert('Error al cargar estadísticas: ' + data.mensaje, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión al cargar estadísticas', 'error');
+            }
+        }
+
+        async function cargarDatosSeccion(seccionId) {
+            switch (seccionId) {
+                case 'mis-solicitudes':
+                    await cargarMisSolicitudes();
+                    break;
+                case 'mis-ofertas':
+                    await cargarMisOfertas();
+                    break;
+                case 'eventos':
+                    await cargarEventos();
+                    break;
+                case 'gestionar-solicitudes':
+                    if (tieneRolAdmin()) {
+                        await cargarTodasLasSolicitudes();
+                    }
+                    break;
+                case 'usuarios':
+                    if (tieneRol('SUPER_ADMIN')) {
+                        await cargarUsuarios();
+                    }
+                    break;
+            }
+        }
+
+        async function cargarMisSolicitudes() {
+            try {
+                const tbody = document.getElementById('solicitudesTableBody');
+                tbody.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner"></i><p>Cargando solicitudes...</p></td></tr>';
+
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=obtenerSolicitudesUsuario&idUsuario=${usuario.id}`
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarSolicitudesEnTabla(data.solicitudes, 'solicitudesTableBody');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center">Error: ${data.mensaje}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('solicitudesTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="text-center">Error de conexión</td></tr>';
+            }
+        }
+
+        async function cargarMisOfertas() {
+            try {
+                const tbody = document.getElementById('ofertasTableBody');
+                tbody.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner"></i><p>Cargando ofertas...</p></td></tr>';
+
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=obtenerOfertasUsuario&idUsuario=${usuario.id}`
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarOfertasEnTabla(data.ofertas, 'ofertasTableBody');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center">Error: ${data.mensaje}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('ofertasTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="text-center">Error de conexión</td></tr>';
+            }
+        }
+
+        async function cargarEventos() {
+            try {
+                const tbody = document.getElementById('eventosTableBody');
+                tbody.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner"></i><p>Cargando eventos...</p></td></tr>';
+
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'action=obtenerEventos'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarEventosEnTabla(data.eventos, 'eventosTableBody');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center">Error: ${data.mensaje}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('eventosTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="text-center">Error de conexión</td></tr>';
+            }
+        }
+
+        async function cargarTodasLasSolicitudes() {
+            try {
+                const tbody = document.getElementById('gestionSolicitudesTableBody');
+                tbody.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner"></i><p>Cargando solicitudes...</p></td></tr>';
+
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'action=obtenerTodasLasSolicitudes'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarSolicitudesGestionEnTabla(data.solicitudes, 'gestionSolicitudesTableBody');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center">Error: ${data.mensaje}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('gestionSolicitudesTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="text-center">Error de conexión</td></tr>';
+            }
+        }
+
+        async function cargarUsuarios() {
+            try {
+                const tbody = document.getElementById('usuariosTableBody');
+                tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner"></i><p>Cargando usuarios...</p></td></tr>';
+
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'action=obtenerUsuarios'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    mostrarUsuariosEnTabla(data.usuarios, 'usuariosTableBody');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center">Error: ${data.mensaje}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('usuariosTableBody').innerHTML = 
+                    '<tr><td colspan="7" class="text-center">Error de conexión</td></tr>';
+            }
+        }
+
+        function mostrarSolicitudesEnTabla(solicitudes, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            
+            if (!solicitudes || solicitudes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay solicitudes registradas</td></tr>';
+                return;
+            }
+
+            const rows = solicitudes.map(solicitud => `
+                <tr>
+                    <td>${solicitud.evento}</td>
+                    <td>
+                        <strong>Llegada:</strong> ${formatearFecha(solicitud.fechaLlegada)}<br>
+                        <strong>Salida:</strong> ${formatearFecha(solicitud.fechaSalida)}
+                    </td>
+                    <td>${solicitud.numPersonas} personas</td>
+                    <td><span class="status-badge status-${solicitud.estado.toLowerCase()}">${solicitud.estado}</span></td>
+                    <td>${formatearFecha(solicitud.fechaSolicitud)}</td>
+                    <td>
+                        <button class="btn btn-small" onclick="verDetalleSolicitud('${solicitud.id}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        ${solicitud.estado === 'PENDIENTE' ? `
+                            <button class="btn btn-small btn-danger" onclick="cancelarSolicitud('${solicitud.id}')">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = rows;
+        }
+
+        function mostrarOfertasEnTabla(ofertas, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            
+            if (!ofertas || ofertas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay ofertas registradas</td></tr>';
+                return;
+            }
+
+            const rows = ofertas.map(oferta => `
+                <tr>
+                    <td>${oferta.evento}</td>
+                    <td>${oferta.numHabitaciones}</td>
+                    <td>${oferta.capacidadTotal} personas</td>
+                    <td><span class="status-badge status-${oferta.estado.toLowerCase()}">${oferta.estado}</span></td>
+                    <td>${formatearFecha(oferta.fechaOferta)}</td>
+                    <td>
+                        <button class="btn btn-small" onclick="verDetalleOferta('${oferta.id}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        <button class="btn btn-small" onclick="editarOferta('${oferta.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = rows;
+        }
+
+        function mostrarEventosEnTabla(eventos, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            
+            if (!eventos || eventos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay eventos disponibles</td></tr>';
+                return;
+            }
+
+            const rows = eventos.map(evento => `
+                <tr>
+                    <td><strong>${evento.titulo}</strong></td>
+                    <td>${evento.ciudad}</td>
+                    <td>${formatearFecha(evento.fechaInicio)}</td>
+                    <td>${formatearFecha(evento.fechaFin)}</td>
+                    <td><span class="status-badge status-${evento.estado.toLowerCase()}">${evento.estado}</span></td>
+                    <td>
+                        <button class="btn btn-small" onclick="verDetalleEvento('${evento.id}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        <a href="solicitar-hospedaje.html?evento=${evento.id}" class="btn btn-small btn-success">
+                            <i class="fas fa-bed"></i> Solicitar
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = rows;
+        }
+
+        function mostrarSolicitudesGestionEnTabla(solicitudes, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            
+            if (!solicitudes || solicitudes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay solicitudes pendientes</td></tr>';
+                return;
+            }
+
+            const rows = solicitudes.map(solicitud => `
+                <tr>
+                    <td>${solicitud.usuario}</td>
+                    <td>${solicitud.evento}</td>
+                    <td>
+                        ${formatearFecha(solicitud.fechaLlegada)} - ${formatearFecha(solicitud.fechaSalida)}
+                    </td>
+                    <td>${solicitud.numPersonas} personas</td>
+                    <td><span class="status-badge status-${solicitud.estado.toLowerCase()}">${solicitud.estado}</span></td>
+                    <td>
+                        <button class="btn btn-small" onclick="verDetalleSolicitudGestion('${solicitud.id}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        ${solicitud.estado === 'PENDIENTE' ? `
+                            <button class="btn btn-small btn-success" onclick="aprobarSolicitud('${solicitud.id}')">
+                                <i class="fas fa-check"></i> Aprobar
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="rechazarSolicitud('${solicitud.id}')">
+                                <i class="fas fa-times"></i> Rechazar
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = rows;
+        }
+
+        function mostrarUsuariosEnTabla(usuarios, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            
+            if (!usuarios || usuarios.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay usuarios registrados</td></tr>';
+                return;
+            }
+
+            const rows = usuarios.map(usuario => `
+                <tr>
+                    <td>${usuario.nombre}</td>
+                    <td>${usuario.email}</td>
+                    <td>${usuario.ciudad || 'No especificada'}</td>
+                    <td>${usuario.iglesia || 'No especificada'}</td>
+                    <td><span class="status-badge status-${usuario.estado.toLowerCase()}">${usuario.estado}</span></td>
+                    <td>${usuario.ultimoAcceso ? formatearFecha(usuario.ultimoAcceso) : 'Nunca'}</td>
+                    <td>
+                        <button class="btn btn-small" onclick="verDetalleUsuario('${usuario.id}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        <button class="btn btn-small" onclick="editarRolUsuario('${usuario.id}')">
+                            <i class="fas fa-user-cog"></i> Roles
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = rows;
+        }
+
+        // Funciones de acciones
+        async function manejarCrearEvento(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const eventoData = Object.fromEntries(formData);
+            
+            try {
+                showAlert('Creando evento...', 'info');
+                
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'crearEvento',
+                        ...eventoData,
+                        creadoPor: usuario.id
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Evento creado exitosamente', 'success');
+                    e.target.reset();
+                    await cargarEventos();
+                } else {
+                    showAlert('Error al crear evento: ' + data.mensaje, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión al crear evento', 'error');
+            }
+        }
+
+        async function aprobarSolicitud(idSolicitud) {
+            if (!confirm('¿Está seguro de aprobar esta solicitud?')) return;
+            
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=aprobarSolicitud&idSolicitud=${idSolicitud}&aprobadoPor=${usuario.id}`
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Solicitud aprobada exitosamente', 'success');
+                    await cargarTodasLasSolicitudes();
+                } else {
+                    showAlert('Error al aprobar solicitud: ' + data.mensaje, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión', 'error');
+            }
+        }
+
+        async function rechazarSolicitud(idSolicitud) {
+            const motivo = prompt('Ingrese el motivo del rechazo (opcional):');
+            if (motivo === null) return; // Usuario canceló
+            
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=rechazarSolicitud&idSolicitud=${idSolicitud}&motivo=${encodeURIComponent(motivo)}&rechazadoPor=${usuario.id}`
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Solicitud rechazada', 'success');
+                    await cargarTodasLasSolicitudes();
+                } else {
+                    showAlert('Error al rechazar solicitud: ' + data.mensaje, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión', 'error');
+            }
+        }
+
+        async function cancelarSolicitud(idSolicitud) {
+            if (!confirm('¿Está seguro de cancelar esta solicitud?')) return;
+            
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=cancelarSolicitud&idSolicitud=${idSolicitud}&idUsuario=${usuario.id}`
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Solicitud cancelada', 'success');
+                    await cargarMisSolicitudes();
+                } else {
+                    showAlert('Error al cancelar solicitud: ' + data.mensaje, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión', 'error');
+            }
+        }
+
+        // Funciones de modales
+        function verDetalleSolicitud(idSolicitud) {
+            // Implementar vista de detalle
+            abrirModal('Detalle de Solicitud', '<p>Cargando detalles...</p>');
+            // Aquí iría la lógica para cargar y mostrar los detalles
+        }
+
+        function verDetalleOferta(idOferta) {
+            abrirModal('Detalle de Oferta', '<p>Cargando detalles...</p>');
+        }
+
+        function verDetalleEvento(idEvento) {
+            abrirModal('Detalle de Evento', '<p>Cargando detalles...</p>');
+        }
+
+        function verDetalleSolicitudGestion(idSolicitud) {
+            abrirModal('Gestionar Solicitud', '<p>Cargando detalles...</p>');
+        }
+
+        function verDetalleUsuario(idUsuario) {
+            abrirModal('Detalle de Usuario', '<p>Cargando detalles...</p>');
+        }
+
+        function editarOferta(idOferta) {
+            abrirModal('Editar Oferta', '<p>Formulario de edición...</p>');
+        }
+
+        function editarRolUsuario(idUsuario) {
+            abrirModal('Gestionar Roles', '<p>Gestión de roles...</p>');
+        }
+
+        function abrirModal(titulo, contenido) {
+            document.getElementById('modalTitle').textContent = titulo;
+            document.getElementById('modalBody').innerHTML = contenido;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Funciones de utilidad
+        function formatearFecha(fecha) {
+            if (!fecha) return 'No disponible';
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function showAlert(mensaje, tipo = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${tipo}`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${mensaje}
+            `;
+            
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+        }
+
+        function clearAlerts() {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = '';
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Está seguro de cerrar sesión?')) {
+                localStorage.removeItem('usuario');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
