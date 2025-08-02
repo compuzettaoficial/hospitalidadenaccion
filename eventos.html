@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - Hospitalidad en Acción</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a5568;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .filters {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .event-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .event-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-city {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .event-body {
+            padding: 1.5rem;
+        }
+
+        .event-info {
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: #4a5568;
+        }
+
+        .info-row i {
+            width: 20px;
+            margin-right: 0.75rem;
+            color: #667eea;
+        }
+
+        .event-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .no-events i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #9b2c2c;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #fc8181;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .event-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-home"></i> Hospitalidad en Acción
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="eventos.html" style="color: #667eea;">Eventos</a></li>
+                <li><a href="login.html">Iniciar Sesión</a></li>
+                <li><a href="registro.html">Registrarse</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-calendar-alt"></i> Eventos Disponibles</h1>
+            <p>Encuentra eventos religiosos en tu ciudad y solicita hospedaje</p>
+        </div>
+
+        <div class="filters">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="ciudadFiltro">
+                        <i class="fas fa-map-marker-alt"></i> Ciudad
+                    </label>
+                    <select id="ciudadFiltro">
+                        <option value="">Todas las ciudades</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="fechaFiltro">
+                        <i class="fas fa-calendar"></i> Fecha desde
+                    </label>
+                    <input type="date" id="fechaFiltro">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="busquedaFiltro">
+                        <i class="fas fa-search"></i> Buscar evento
+                    </label>
+                    <input type="text" id="busquedaFiltro" placeholder="Buscar por título...">
+                </div>
+                
+                <div class="filter-group">
+                    <button class="btn" onclick="aplicarFiltros()">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorContainer"></div>
+        
+        <div id="loadingContainer" class="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Cargando eventos...</p>
+        </div>
+
+        <div id="eventsContainer" class="events-grid" style="display: none;"></div>
+        
+        <div id="noEventsContainer" class="no-events" style="display: none;">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No se encontraron eventos</h3>
+            <p>No hay eventos disponibles con los criterios seleccionados.</p>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw_hmZE6PrJ7i5Q-gGG6R3I1QPDpWangAf41Z8y-gDpetqreLSy0LrE2ds81mVuwRX_/exec';
+        let todosLosEventos = [];
+        let eventosFiltrados = [];
+
+        // Cargar eventos al iniciar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarEventos();
+        });
+
+        async function cargarEventos() {
+            try {
+                mostrarLoading(true);
+                
+                const formData = new FormData();
+                formData.append('action', 'obtenerEventos');
+                
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                
+                const eventos = await response.json();
+                todosLosEventos = Array.isArray(eventos) ? eventos : [];
+                eventosFiltrados = [...todosLosEventos];
+                
+                llenarFiltros();
+                mostrarEventos();
+                
+            } catch (error) {
+                console.error('Error al cargar eventos:', error);
+                mostrarError('Error al cargar los eventos. Por favor, intenta nuevamente.');
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        function llenarFiltros() {
+            const ciudadSelect = document.getElementById('ciudadFiltro');
+            const ciudades = [...new Set(todosLosEventos.map(evento => evento.ciudad))].sort();
+            
+            ciudadSelect.innerHTML = '<option value="">Todas las ciudades</option>';
+            ciudades.forEach(ciudad => {
+                const option = document.createElement('option');
+                option.value = ciudad;
+                option.textContent = ciudad;
+                ciudadSelect.appendChild(option);
+            });
+        }
+
+        function aplicarFiltros() {
+            const ciudadFiltro = document.getElementById('ciudadFiltro').value;
+            const fechaFiltro = document.getElementById('fechaFiltro').value;
+            const busquedaFiltro = document.getElementById('busquedaFiltro').value.toLowerCase();
+            
+            eventosFiltrados = todosLosEventos.filter(evento => {
+                let cumpleFiltros = true;
+                
+                // Filtro por ciudad
+                if (ciudadFiltro && evento.ciudad !== ciudadFiltro) {
+                    cumpleFiltros = false;
+                }
+                
+                // Filtro por fecha
+                if (fechaFiltro) {
+                    const fechaEvento = new Date(evento.fechaInicio);
+                    const fechaFiltroDate = new Date(fechaFiltro);
+                    if (fechaEvento < fechaFiltroDate) {
+                        cumpleFiltros = false;
+                    }
+                }
+                
+                // Filtro por búsqueda de texto
+                if (busquedaFiltro && !evento.titulo.toLowerCase().includes(busquedaFiltro)) {
+                    cumpleFiltros = false;
+                }
+                
+                return cumpleFiltros;
+            });
+            
+            mostrarEventos();
+        }
+
+        function mostrarEventos() {
+            const container = document.getElementById('eventsContainer');
+            const noEventsContainer = document.getElementById('noEventsContainer');
+            
+            if (eventosFiltrados.length === 0) {
+                container.style.display = 'none';
+                noEventsContainer.style.display = 'block';
+                return;
+            }
+            
+            noEventsContainer.style.display = 'none';
+            container.style.display = 'grid';
+            container.innerHTML = '';
+            
+            eventosFiltrados.forEach(evento => {
+                const eventoCard = crearEventoCard(evento);
+                container.appendChild(eventoCard);
+            });
+        }
+
+        function crearEventoCard(evento) {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            
+            const fechaInicio = formatearFecha(evento.fechaInicio);
+            const fechaFin = formatearFecha(evento.fechaFin);
+            
+            card.innerHTML = `
+                <div class="event-header">
+                    <div class="event-title">${evento.titulo}</div>
+                    <div class="event-city">
+                        <i class="fas fa-map-marker-alt"></i> ${evento.ciudad}
+                    </div>
+                </div>
+                <div class="event-body">
+                    <div class="event-info">
+                        <div class="info-row">
+                            <i class="fas fa-calendar-start"></i>
+                            <span>Inicio: ${fechaInicio}</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="fas fa-calendar-end"></i>
+                            <span>Fin: ${fechaFin}</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${evento.direccion || 'Dirección por confirmar'}</span>
+                        </div>
+                    </div>
+                    <div class="event-description">
+                        ${evento.descripcion || 'Sin descripción disponible'}
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn" onclick="solicitarHospedaje('${evento.id}')">
+                            <i class="fas fa-bed"></i> Solicitar Hospedaje
+                        </button>
+                        <button class="btn btn-secondary" onclick="ofrecerHospedaje('${evento.id}')">
+                            <i class="fas fa-home"></i> Ofrecer Hospedaje
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function solicitarHospedaje(idEvento) {
+            // Verificar si el usuario está logueado
+            const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+            
+            if (!usuario) {
+                alert('Debes iniciar sesión para solicitar hospedaje');
+                window.location.href = 'login.html?redirect=eventos.html';
+                return;
+            }
+            
+            // Redirigir a la página de solicitud de hospedaje
+            window.location.href = `solicitar-hospedaje.html?evento=${idEvento}`;
+        }
+
+        function ofrecerHospedaje(idEvento) {
+            // Verificar si el usuario está logueado
+            const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+            
+            if (!usuario) {
+                alert('Debes iniciar sesión para ofrecer hospedaje');
+                window.location.href = 'login.html?redirect=eventos.html';
+                return;
+            }
+            
+            // Redirigir a la página de oferta de hospedaje
+            window.location.href = `ofrecer-hospedaje.html?evento=${idEvento}`;
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return 'Fecha no disponible';
+            
+            const date = new Date(fecha);
+            const opciones = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                timeZone: 'America/Lima'
+            };
+            
+            return date.toLocaleDateString('es-PE', opciones);
+        }
+
+        function mostrarLoading(mostrar) {
+            const loadingContainer = document.getElementById('loadingContainer');
+            const eventsContainer = document.getElementById('eventsContainer');
+            const noEventsContainer = document.getElementById('noEventsContainer');
+            
+            if (mostrar) {
+                loadingContainer.style.display = 'block';
+                eventsContainer.style.display = 'none';
+                noEventsContainer.style.display = 'none';
+            } else {
+                loadingContainer.style.display = 'none';
+            }
+        }
+
+        function mostrarError(mensaje) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `
+                <div class="error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    ${mensaje}
+                </div>
+            `;
+        }
+
+        // Event listeners para filtros en tiempo real
+        document.getElementById('busquedaFiltro').addEventListener('input', function() {
+            setTimeout(aplicarFiltros, 300); // Debounce de 300ms
+        });
+
+        document.getElementById('ciudadFiltro').addEventListener('change', aplicarFiltros);
+        document.getElementById('fechaFiltro').addEventListener('change', aplicarFiltros);
+    </script>
+</body>
+</html>
